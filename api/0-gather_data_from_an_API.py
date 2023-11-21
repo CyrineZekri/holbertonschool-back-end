@@ -25,7 +25,7 @@ def fetch_todo_list_progress(employee_id):
         for task in completed_tasks:
             print(f"\t {task['title']}")
     else:
-        print("Failed to fetch data. Please check the employee ID and your internet connection.")
+        print("Failed to fetch data")
 
 
 if __name__ == "__main__":
