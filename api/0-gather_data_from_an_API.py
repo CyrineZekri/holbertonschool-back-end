@@ -3,6 +3,7 @@
 import requests
 import sys
 
+
 def fetch_todo_list_progress(employee_id):
     base_url = 'https://jsonplaceholder.typicode.com'
 
@@ -19,11 +20,13 @@ def fetch_todo_list_progress(employee_id):
         completed_tasks = [task for task in todos if task['completed']]
         total_tasks = len(todos)
 
-        print(f"Employee {user['name']} is done with tasks({len(completed_tasks)}/{total_tasks}):")
+        print(
+            f"Employee {user['name']} is done with tasks({len(completed_tasks)}/{total_tasks}):")
         for task in completed_tasks:
             print(f"\t {task['title']}")
     else:
         print("Failed to fetch data. Please check the employee ID and your internet connection.")
+
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
