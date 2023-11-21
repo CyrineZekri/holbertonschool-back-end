@@ -30,12 +30,12 @@ def fetch_todo_list_progress(employee_id):
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
-        print("Usage: script.py <employee_id>")
+        print("Enter employee id")
         sys.exit(1)
 
     try:
         employee_id = int(sys.argv[1])
         fetch_todo_list_progress(employee_id)
     except ValueError:
-        print("Error: Employee ID must be an integer.")
+        print("Employee ID must be an integer.")
         sys.exit(1)
