@@ -1,50 +1,76 @@
 #!/usr/bin/python3
-''' Module documentation '''
+'''
+This module defines the REST API.
+'''
 import csv
 import requests
-import sys
+from sys import argv
+BASE_URL = 'https://jsonplaceholder.typicode.com'
 
 
-def export_tasks_to_csv(employee_id):
-    base_url = 'https://jsonplaceholder.typicode.com'
+def get_name(id):
+    response = requests.get(f'{BASE_URL}/users/{id}')
+    response.raise_for_status()
+    user_data = response.json()
+    return user_data.get('name')
 
-    user_response = requests.get(f'{base_url}/users/{employee_id}')
-    todos_response = requests.get(
-        f'{base_url}/todos',
-        params={
-            'userId': employee_id})
 
-    if user_response.status_code == 200 and todos_response.status_code == 200:
-        user = user_response.json()
-        todos = todos_response.json()
+def get_todos(id):
+    response = requests.get(f'{BASE_URL}/todos', params={'userId': id})
+    response.raise_for_status()
+    return response.json()
 
-        tasks_data = [
-            ["USER_ID", "USERNAME", "TASK_COMPLETED_STATUS", "TASK_TITLE"]
-        ]
-        for task in todos:
-            tasks_data.append([
-                employee_id,
-                user['username'],
-                task['completed'],
-                task['title']
-            ])
 
-        csv_file_name = f"{employee_id}.csv"
-        with open(csv_file_name, 'w', newline='') as csv_file:
-            writer = csv.writer(csv_file, quoting=csv.QUOTE_ALL)
-            writer.writerows(tasks_data)
+def display_todo(id):
+    try:
+        employee_name = get_name(id)
+        todos = get_todos(id)
 
-        print(
-            f"Tasks for employee {user['name']} "
-            f"have been exported to {csv_file_name}.")
-    else:
-        print("Failed to fetch data")
+        completed_tasks = [task for task in todos if task['completed']]
+        completed_count = len(completed_tasks)
+        total_tasks = len(todos)
+
+        print(f"Employee {employee_name} is done "
+              f"with tasks({completed_count}/{total_tasks}):")
+
+        for task in completed_tasks:
+            print(f"\t {task['title']}")
+
+    except requests.RequestException as e:
+        print(f"An error occurred: {e}")
+
+
+def export_to_csv(id):
+    try:
+        user_data = requests.get(f'{BASE_URL}/users/{id}').json()
+        employee_username = user_data.get('username')
+
+        todos = get_todos(id)
+
+        with open(f"{id}.csv", "w", newline='') as csv_file:
+            fieldnames = [
+                "USER_ID",
+                "USERNAME",
+                "TASK_COMPLETED_STATUS",
+                "TASK_TITLE"
+            ]
+            writer = csv.DictWriter(
+                csv_file, fieldnames=fieldnames, quoting=csv.QUOTE_ALL)
+            for task in todos:
+                writer.writerow({
+                    "USER_ID": id,
+                    "USERNAME": employee_username,
+                    "TASK_COMPLETED_STATUS": task['completed'],
+                    "TASK_TITLE": task['title']
+                })
+
+    except requests.RequestException as e:
+        print(f"An error occurred: {e}")
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        print("Usage: Please enter a user ID.")
-        sys.exit(1)
-    else:
-        user_id = sys.argv[1]
-        export_tasks_to_csv(user_id)
+    if len(argv) != 2:
+        exit(1)
+
+    employee_id = int(argv[1])
+    export_to_csv(employee_id)
