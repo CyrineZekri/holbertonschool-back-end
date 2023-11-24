@@ -42,7 +42,7 @@ def export_to_json(id):
 
 
 if __name__ == "__main__":
-    if len(argv) !=2:
+    if len(argv) != 2:
         exit(1)
 
     employee_id = int(argv[1])
