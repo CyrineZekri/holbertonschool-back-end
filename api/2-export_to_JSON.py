@@ -1,45 +1,56 @@
 #!/usr/bin/python3
-''' Module documentation'''
+'''
+This module defines the REST API
+still needs to be updated, random errors sometimes
+'''
 import json
 import requests
-import sys
+from sys import argv
+BASE_URL = 'https://jsonplaceholder.typicode.com'
 
 
-def export_tasks_to_json(employee_id):
-    '''Export tasks to a JSON file for the given employee ID.'''
+def get_username(id):
+    '''Fetch employee username by ID'''
+    response = requests.get(f'{BASE_URL}/users/{id}')
+    response.raise_for_status()
+    user_data = response.json()
+    return user_data.get('username')
+
+
+def get_todos(id):
+    '''Fetch TODOs for the given employee ID'''
+    response = requests.get(f'{BASE_URL}/todos', params={'userId': id})
+    response.raise_for_status()
+    return response.json()
+
+
+def export_to_json(id):
+    '''Export the TODO list to JSON for the given employee ID '''
     try:
-        base_url = 'https://jsonplaceholder.typicode.com'
+        employee_username = get_username(id)
+        todos = get_todos(id)
 
-        user_response = requests.get(f'{base_url}/users/{employee_id}')
-        user_response.raise_for_status()
-        user = user_response.json()
-
-        todos_response = requests.get(
-            f'{base_url}/todos',
-            params={'userId': employee_id})
-        todos_response.raise_for_status()
-        todos = todos_response.json()
-
-        json_data = {str(employee_id): []}
+        tasks_list = []
         for task in todos:
-            json_data[str(employee_id)].append({
+            task_data = {
                 "task": task['title'],
                 "completed": task['completed'],
-                "username": user['username']
-            })
+                "username": employee_username
+            }
+            tasks_list.append(task_data)
 
-        json_file_name = f"{employee_id}.json"
-        with open(json_file_name, 'w') as json_file:
-            json.dump(json_data, json_file, indent=4)
+        # Construct the final JSON structure
+        json_structure = {str(id): tasks_list}
+        with open(f"{id}.json", "w") as json_file:
+            json.dump(json_structure, json_file)
 
-        print(f"Tasks for employee {user['name']} have been exported to {json_file_name}.")
     except requests.RequestException as e:
         print(f"An error occurred: {e}")
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        sys.exit(1)
-    else:
-        user_id = sys.argv[1]
-        export_tasks_to_json(user_id)
+    if len(argv) < 2:
+        exit(1)
+
+    employee_id = int(argv[1])
+    export_to_json(employee_id)
