@@ -15,7 +15,7 @@ def export_tasks_to_csv(user_id):
     if tasks_response.status_code != 200:
         return f"error fetching tasks "
     tasks_data = tasks_response.json()
-    csv_data = [["USER_ID", "USERNAME", "TASK_COMPLETED_STATUS", "TASK_TITLE"]]
+    csv_data = [["USER_ID","USERNAME","TASK_COMPLETED_STATUS","TASK_TITLE"]]
     for task in tasks_data:
         csv_data.append([user_id, user_data["username"],
                         task["completed"], task["title"]])
