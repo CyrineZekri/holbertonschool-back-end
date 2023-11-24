@@ -21,8 +21,7 @@ def fetch_todo_list_progress(employee_id):
         total_tasks = len(todos)
 
         print(
-            f"Employee {user['name']} is done with 
-            tasks({len(completed_tasks)}/{total_tasks}):")
+            f"Employee {user['name']} is done with tasks({len(completed_tasks)}/{total_tasks}):")
         for task in completed_tasks:
             print(f"\t {task['title']}")
     else:
