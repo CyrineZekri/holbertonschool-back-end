@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 ''' Module documentation'''
-import sys
 import csv
 import requests
+import sys
 
 
 def export_tasks_to_csv(user_id):
