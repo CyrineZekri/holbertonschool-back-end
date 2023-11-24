@@ -1,55 +1,48 @@
 #!/usr/bin/python3
-'''
-This module defines the REST API
-'''
-import json
+''' Module documentation '''
+import csv
 import requests
-from sys import argv
-BASE_URL = 'https://jsonplaceholder.typicode.com'
+import sys
 
 
-def get_username(id):
-    '''Fetch employee username by ID'''
-    response = requests.get(f'{BASE_URL}/users/{id}')
-    response.raise_for_status()
-    user_data = response.json()
-    return user_data.get('username')
-
-
-def get_todos(id):
-    '''Fetch TODOs for the given employee ID'''
-    response = requests.get(f'{BASE_URL}/todos', params={'userId': id})
-    response.raise_for_status()
-    return response.json()
-
-
-def export_to_json(id):
-    '''Export the TODO list to JSON for the given employee ID '''
+def export_tasks_to_csv(employee_id):
+    '''Export tasks to a CSV file for the given employee ID.'''
     try:
-        employee_username = get_username(id)
-        todos = get_todos(id)
+        base_url = 'https://jsonplaceholder.typicode.com'
 
-        tasks_list = []
-        for task in todos:
-            task_data = {
-                "task": task['title'],
-                "completed": task['completed'],
-                "username": employee_username
-            }
-            tasks_list.append(task_data)
+        user_response = requests.get(f'{base_url}/users/{employee_id}')
+        user_response.raise_for_status()
+        user = user_response.json()
 
-        # Construct the final JSON structure
-        json_structure = {str(id): tasks_list}
-        with open(f"{id}.json", "w") as json_file:
-            json.dump(json_structure, json_file)
+        todos_response = requests.get(
+            f'{base_url}/todos',
+            params={'userId': employee_id})
+        todos_response.raise_for_status()
+        todos = todos_response.json()
 
+        csv_file_name = f"{employee_id}.csv"
+        with open(csv_file_name, 'w', newline='') as csv_file:
+            writer = csv.writer(csv_file, quoting=csv.QUOTE_MINIMAL)
+
+            writer.writerow(["USER_ID", "USERNAME", "TASK_COMPLETED_STATUS", "TASK_TITLE"])
+
+            for task in todos:
+                writer.writerow([
+                    str(employee_id),
+                    user['username'],
+                    str(task['completed']),
+                    task['title']
+                ])
+
+        print(f"Tasks for employee {user['name']} have been exported to {csv_file_name}.")
     except requests.RequestException as e:
         print(f"An error occurred: {e}")
 
 
 if __name__ == "__main__":
-    if len(argv) < 2:
-        exit(1)
-
-    employee_id = int(argv[1])
-    export_to_json(employee_id)
+    if len(sys.argv) != 2:
+        print("Usage: Please enter a user ID.")
+        sys.exit(1)
+    else:
+        user_id = sys.argv[1]
+        export_tasks_to_csv(user_id)
