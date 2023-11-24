@@ -20,13 +20,15 @@ def export_tasks_to_csv(employee_id):
         todos_response.raise_for_status()
         todos = todos_response.json()
 
+        
         tasks_data = [
-            ["USER_ID", "USERNAME", "TASK_COMPLETED_STATUS", "TASK_TITLE"]
+            ["USER_ID", "USERNAME", "EMPLOYEE_NAME", "TASK_COMPLETED_STATUS", "TASK_TITLE"]
         ]
         for task in todos:
             tasks_data.append([
                 employee_id,
                 user['username'],
+                user['name'],  
                 task['completed'],
                 task['title']
             ])
