@@ -10,8 +10,8 @@ def get_all_users():
     response=requests.get(f'{BASE_URL}/users')
     response.raise_for_status()
     return response.json()
-def get_todos(id):
-    response = requests.get(f'{BASE_URL}/todos', params={'userId': id})
+def get_todos(user_id):
+    response = requests.get(f'{BASE_URL}/todos', params={'userId': user_id})
     response.raise_for_status()
     return response.json()
 
