@@ -6,7 +6,7 @@ import sys
 BASE_URL = 'https://jsonplaceholder.typicode.com'
 
 
-def get_all_users():
+def get_users():
     response=requests.get(f'{BASE_URL}/users')
     response.raise_for_status()
     return response.json()
@@ -19,7 +19,7 @@ def export_all_to_json():
     all_users_data={}
 
     try:
-        users=get_all_users()
+        users=get_users()
        # getting all lists for one user ONLY, 
        # a user is an{ "id" : [list containing his tasks in {} one by one ]
         for user in users:
