@@ -1,24 +1,29 @@
 #!/usr/bin/python3
-"""module documentation"""
+'''
+Export data in JSON format for the employees.
+'''
 import json
 import requests
-import sys
+
 BASE_URL = 'https://jsonplaceholder.typicode.com'
 
 
 def get_users():
+    '''Fetch all users'''
     response = requests.get(f'{BASE_URL}/users')
     response.raise_for_status()
     return response.json()
 
 
 def get_todos(user_id):
+    '''Fetch TODOs for the given user ID'''
     response = requests.get(f'{BASE_URL}/todos', params={'userId': user_id})
     response.raise_for_status()
     return response.json()
 
 
 def export_all_to_json():
+    '''Export the TODO list for all employees to JSON'''
     all_users_data = {}
 
     try:
@@ -37,6 +42,7 @@ def export_all_to_json():
                 }
                 tasks_list.append(task_data)
 
+            # Construct the final JSON structure
             all_users_data[str(user_id)] = tasks_list
 
         with open("todo_all_employees.json", "w") as json_file:
