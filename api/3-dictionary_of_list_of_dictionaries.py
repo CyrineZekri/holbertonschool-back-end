@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 '''
-Export data in JSON format for the employees.
+Export data in JSON format for all employees.
 '''
 import json
 import requests
