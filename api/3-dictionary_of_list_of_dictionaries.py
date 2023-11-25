@@ -11,7 +11,7 @@ def get_all_users():
     response.raise_for_status()
     return response.json()
 def get_todos(user_id):
-    response = requests.get(f'{BASE_URL}/todos', params={'userId': user_idid})
+    response = requests.get(f'{BASE_URL}/todos', params={'userId': user_id})
     response.raise_for_status()
     return response.json()
 
